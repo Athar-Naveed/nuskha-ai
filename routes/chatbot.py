@@ -4,8 +4,17 @@ from fastapi import APIRouter,Depends,status
 from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer
 import google.generativeai as genai
-
+from sqlalchemy.orm import Session,sessionmaker
+from models.auth_model import engine
 from models.media_receive import MediaRequest
+
+
+async def get_db():
+    db:Session = sessionmaker(autoflush=False,autocommit=False,bind=engine)
+    try:
+        yield db
+    finally:
+        db.close()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
