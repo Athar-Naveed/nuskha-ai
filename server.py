@@ -1,10 +1,17 @@
-import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from auth import auth
 from routes import chatbot
+from database import init_db
 
-app:FastAPI = FastAPI()
+
+async def lifespan(app:FastAPI):
+    init_db()
+    yield
+    
+
+app:FastAPI = FastAPI(lifespan=lifespan)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -16,8 +23,10 @@ app.include_router(auth.app,prefix="/auth")
 app.include_router(chatbot.app)
 
 
+
+
 @app.get("/")
-def index():
+async def index():
     return {"message": "Welcome to the Nuskha AI!"}
 
 

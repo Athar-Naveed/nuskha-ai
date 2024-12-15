@@ -1,26 +1,31 @@
-import os
-from fastapi import HTTPException,status
-from sqlalchemy import Engine,create_engine,String
-from sqlalchemy.orm import Mapped,mapped_column,DeclarativeBase
-from dotenv import load_dotenv
-from media_receive import MediaRequest
-
+from sqlalchemy import String, ForeignKey, DateTime
+from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
+from sqlalchemy.sql import func
 
 class Base(DeclarativeBase):
     pass
+
 class Users(Base):
     __tablename__ = "users"
-    user_id:Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
-    user_email:Mapped[str] = mapped_column(String(30)) 
-    user_pass:Mapped[str] = mapped_column(String(30)) 
+    user_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    first_name: Mapped[str] = mapped_column(String(30))
+    last_name: Mapped[str] = mapped_column(String(30))
+    user_email: Mapped[str] = mapped_column(String(50)) 
+    user_pass: Mapped[str] = mapped_column(String(30))
+
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    user_chat_id: Mapped["UserChats"] = relationship(backref="user_chat_id", passive_deletes=True)
 
 
-load_dotenv()
+class UserChats(Base):
+    __tablename__ = "user chats"
+    user_chat_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_prompt: Mapped[str] = mapped_column(String())
+    bot_response: Mapped[str] = mapped_column(String())
+    chat_image: Mapped[str] = mapped_column(String())
 
-try:
-    connection_url:str = os.getenv("DB_CONNECTION_URL")
-    engine:Engine = create_engine(connection_url)
-    Base.metadata.create_all(bind=engine)
-except Exception as e:
-    print(e)
-    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail=e)
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    users: Mapped[int] = mapped_column(ForeignKey("users.user_id", ondelete="CASCADE"))
