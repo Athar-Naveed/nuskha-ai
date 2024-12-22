@@ -1,3 +1,4 @@
+from typing import Optional
 from sqlalchemy import String, ForeignKey, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase, relationship
 from sqlalchemy.sql import func
@@ -11,16 +12,16 @@ class Users(Base):
     first_name: Mapped[str] = mapped_column(String(30))
     last_name: Mapped[str] = mapped_column(String(30))
     user_email: Mapped[str] = mapped_column(String(50)) 
-    user_pass: Mapped[str] = mapped_column(String(30))
+    user_pass: Mapped[str] = mapped_column(String())
 
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
-    user_chat_id: Mapped["UserChats"] = relationship(backref="user_chat_id", passive_deletes=True)
+    user_chats: Mapped[Optional["UserChats"]] = relationship(backref="userChats.user_chat_id", passive_deletes=True)
 
 
 class UserChats(Base):
-    __tablename__ = "user chats"
+    __tablename__ = "userChats"
     user_chat_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_prompt: Mapped[str] = mapped_column(String())
     bot_response: Mapped[str] = mapped_column(String())

@@ -1,6 +1,6 @@
 import os
 from fastapi import HTTPException,status
-from sqlalchemy import Engine,engine,create_engine
+from sqlalchemy import Engine,create_engine
 from sqlalchemy.orm import Session,sessionmaker
 from dotenv import load_dotenv
 from models.auth_model import Base
@@ -8,12 +8,12 @@ from models.media_receive import MediaRequest
 load_dotenv()
 
 
+connection_url:str = os.getenv("DB_CONNECTION_URL")
+engine:Engine = create_engine(connection_url)
 session_local = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def init_db():
     try:
-        connection_url:str = os.getenv("DB_CONNECTION_URL")
-        engine:Engine = create_engine(connection_url)
         Base.metadata.create_all(bind=engine)
     except Exception as e:
         print(e)
