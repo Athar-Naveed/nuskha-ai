@@ -1,32 +1,46 @@
 import os
 
-from fastapi import APIRouter,Depends,status
-from typing import Annotated
+from fastapi import APIRouter,Depends,Form,File,UploadFile,status
+from typing import Annotated,Optional
 from fastapi.security import OAuth2PasswordBearer
-import google.generativeai as genai
 from sqlalchemy.orm import Session,sessionmaker
+import google.generativeai as genai
 from database import get_db
 from models.media_receive import MediaRequest
+from auth.utils import decoding_jwt_token 
+from bots.mobile_bot import medical_grocery_chat
 
+
+
+
+genai.configure(api_key=os.environ.get('GEMINI_API_KEY'))
+model = genai.GenerativeModel("gemini-1.5-pro")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 app = APIRouter()
 
 
-genai.configure(api_key=os.environ.get('GEMINI_API_KEY'))
-model = genai.GenerativeModel("gemini-1.5-pro")
-
-async def get_current_user(token:Annotated[dict,Depends(oauth2_scheme)]):
-    pass
+async def get_current_user(token:Annotated[dict, Depends(oauth2_scheme)]):
+    decoded_data = decoding_jwt_token(token)
+    return decoded_data
 
 @app.post("/v1/extracting_items")
 async def extracting_items(
-    # token:Annotated[dict, Depends(get_current_user)],
-    user_request: MediaRequest
-    ):
-    print(f"user_request: {user_request}")
-    if user_request.prompt or user_request.media_image:
-        return {"message": user_request.prompt, "status":status.HTTP_200_OK}
-    else:
-        return {"message":"Prompt and Media image both can't be empty","status":status.HTTP_400_BAD_REQUEST}
+    token: Annotated[dict, Depends(get_current_user)],
+    prompt: Optional[str] = Form(None),
+    media_image: Optional[UploadFile] = File(None),
+):
+    try:
+        print(f"prompt: {prompt}")
+        user_request = MediaRequest(prompt=prompt, media_image=media_image)
+        print(f"user_request: {user_request}")
+        if prompt or media_image:
+            resp = await medical_grocery_chat(prompt)
+            
+            return {"message": resp, "status": status.HTTP_200_OK}
+        else:
+            return {"message": "Prompt and Media image both can't be empty", "status": status.HTTP_400_BAD_REQUEST}
+    except Exception as e:
+        print(f"Error: {e}")
+        return {"message": "Error occurred", "status": status.HTTP_500_INTERNAL_SERVER_ERROR}
