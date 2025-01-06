@@ -38,3 +38,5 @@ def verifying_password(hased_password,stored_password):
     except Exception as e:
         print(f"Error: {e}")
         return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail={"message":e,"status":status.HTTP_400_BAD_REQUEST})
+    
+
