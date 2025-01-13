@@ -32,9 +32,9 @@ async def extracting_items(
     media_image: Optional[UploadFile] = File(None),
 ):
     try:
-        print(f"prompt: {prompt}")
+        
         user_request = MediaRequest(prompt=prompt, media_image=media_image)
-        print(f"user_request: {user_request}")
+        
         if prompt or media_image:
             resp = await medical_grocery_chat(prompt)
             
