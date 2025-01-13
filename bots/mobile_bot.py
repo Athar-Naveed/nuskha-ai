@@ -24,7 +24,7 @@ async def medical_grocery_chat(prompt:str):
             else:
                 response_data = str(response)  # Fallback to string representation
             
-            return response_data
+            return {response_data['candidates'][0]['content']['parts'][0]['text']}
     except Exception as e:
         print(f"Error: {e}")
         return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail={"error":f"Error! {e}","status":status.HTTP_500_INTERNAL_SERVER_ERROR})
