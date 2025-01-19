@@ -23,9 +23,9 @@ class Users(Base):
 class UserChats(Base):
     __tablename__ = "userChats"
     user_chat_id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    user_prompt: Mapped[str] = mapped_column(String())
+    user_prompt: Mapped[str] = mapped_column(String(),nullable=True)
     bot_response: Mapped[str] = mapped_column(String())
-    chat_image: Mapped[str] = mapped_column(String())
+    chat_image: Mapped[str] = mapped_column(String(),nullable=True)
 
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 

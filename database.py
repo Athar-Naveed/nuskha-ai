@@ -4,7 +4,6 @@ from sqlalchemy import Engine,create_engine
 from sqlalchemy.orm import Session,sessionmaker
 from dotenv import load_dotenv
 from models.auth_model import Base
-from models.media_receive import MediaRequest
 load_dotenv()
 
 
