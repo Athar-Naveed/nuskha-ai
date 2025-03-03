@@ -16,7 +16,7 @@ async def login(
         user = db.query(Users).filter(Users.user_email == data['email']).first()
         if user is None:
             return HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail={"message":"User not found!","status":status.HTTP_404_NOT_FOUND})
-        
+    
         verified_password = verifying_password(data['password'],user.user_pass)
         if not verified_password:
             return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail={"message":"Invalid Password!","status":status.HTTP_401_UNAUTHORIZED})
