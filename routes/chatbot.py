@@ -1,65 +1,44 @@
-import os
-
-from fastapi import APIRouter,Depends,Form,File,UploadFile,status
-from typing import Annotated,Optional
+from fastapi import Depends,HTTPException,status
 from sqlalchemy.orm import Session
+from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer
-import google.generativeai as genai
-from database import get_db
-from auth.utils import decoding_jwt_token 
 from bots.mobile_bot import medical_grocery_chat
+from chat_socket.socket_config import sio
+from auth.utils import decoding_jwt_token 
+from database import get_db
 from db.func import storing_chat,retrieving_chats
 
-
-
-genai.configure(api_key=os.environ.get('GEMINI_API_KEY'))
-model = genai.GenerativeModel("gemini-1.5-pro")
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+@sio.event
+async def connect(sid,environ):
+    print(f"User {sid} connected")
+    await sio.emit("send_msg", "Hello from Server")
 
-app = APIRouter()
-
+@sio.event
+async def disconnect(sid, environ):
+    print(f"User {sid} disconnected")
 
 async def get_current_user(token:Annotated[dict, Depends(oauth2_scheme)]):
     decoded_data = decoding_jwt_token(token)
     return decoded_data
 
-
-@app.get("/v1/get_chat")
-async def get_chat(
+@sio.on("sendMessage")
+async def send_message(
     token: Annotated[dict, Depends(get_current_user)],
-    db: Session = Depends(get_db)
-    ):
-    try:
-        chats = retrieving_chats(token['user_id'],db=db)
-        return {"message": chats, "status": status.HTTP_200_OK}
-    except Exception as e:
-        print(f"Error: {e}")
-        return {"message": f"Error! {e}", "status": status.HTTP_500_INTERNAL_SERVER_ERROR}
-
-@app.post("/v1/extracting_items")
-async def extracting_items(
-    token: Annotated[dict, Depends(get_current_user)],
-    prompt: Optional[str] = Form(None),
-    media_image: Optional[UploadFile] = File(None),
-    db:Session = Depends(get_db)
-):
-    try:
-        
-        if prompt or media_image:
-            resp = await medical_grocery_chat(prompt)
-            
-            chat = {
-                "prompt": prompt,
-                "media_image": media_image,
-                "resp":str(resp),
-                "user_id":token["user_id"]
-                }
-            store = storing_chat(chat,db=db)
-            
-            return {"message": resp, "status": status.HTTP_200_OK}
-        else:
-            return {"message": "Prompt and Media image both can't be empty", "status": status.HTTP_400_BAD_REQUEST}
-    except Exception as e:
-        print(f"Error: {e}")
-        return {"message": f"Error! {e}", "status": status.HTTP_500_INTERNAL_SERVER_ERROR}
+    sid, data,db:Session = Depends(get_db)):
+    print(f"Message from: {sid}: {data}")
+        # we need to think how to store user chat in db
+        # chat = {
+        #         "prompt": data['text'],
+        #         # "media_image": media_image,
+        #         "resp":str(resp),
+        #         "user_id":token["user_id"]
+        #         }
+        # store = storing_chat(chat,db=db)
+    # this will broadcast the message to all the users
+    # await sio.emit("message", data)
+    # response = await chatbot.extracting_items(prompt=data)
+    # print(f"response: {response}")
+    # this will send the message back to the sender only
+    async for chat in medical_grocery_chat(data['text']):  
+        await sio.emit("message", {"message":chat,"role":"ai"}, to=sid)

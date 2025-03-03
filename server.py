@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from auth import auth
-from routes import chatbot
+from routes import chatbot,webbot
 from database import init_db
 
 
@@ -20,9 +20,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(auth.app,prefix="/auth")
-app.include_router(chatbot.app)
+app.include_router(webbot.app,prefix="/webbot")
+# app.include_router(chatbot.app)
 
-
+from chat_socket.socket_config import socket_app
+app.mount("/", socket_app)
 
 
 @app.get("/")
