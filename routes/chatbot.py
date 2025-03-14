@@ -24,8 +24,9 @@ async def get_current_user(token:Annotated[dict, Depends(oauth2_scheme)]):
 
 @sio.on("sendMessage")
 async def send_message(
-    token: Annotated[dict, Depends(get_current_user)],
-    sid, data,db:Session = Depends(get_db)):
+    # token: Annotated[dict, Depends(get_current_user)],
+    sid, data):
+    # ,db:Session = Depends(get_db)):
     print(f"Message from: {sid}: {data}")
         # we need to think how to store user chat in db
         # chat = {
