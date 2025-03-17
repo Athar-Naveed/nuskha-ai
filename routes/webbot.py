@@ -4,22 +4,12 @@ from typing import Annotated,Optional
 from sqlalchemy.orm import Session
 from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer
-from pathlib import Path
 from database import get_db
 from auth.utils import decoding_jwt_token 
-from bots.mobile_bot import medical_grocery_chat
 from db.func import storing_chat,retrieving_chats
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-# -----------------------
-# Media upload dir starts
-# -----------------------
-UPLOAD_DIR = Path("images")
-UPLOAD_DIR.mkdir(parents=True,exist_ok=True)
-# -----------------------
-# Media upload dir ends
-# -----------------------
 
 app:APIRouter = APIRouter()
 
@@ -52,6 +42,8 @@ async def extracting_items(
     media_image: Optional[UploadFile] = File(None),
     db:Session = Depends(get_db)
 ):
+    from pathlib import Path
+    from bots.mobile_bot import medical_grocery_chat
     """
     Extracting Items -- v1 (current version)
     This function extracts items from a given prompt and media image.
@@ -60,6 +52,14 @@ async def extracting_items(
     :param media_image: Media image to extract items from.
     :return: Extracted items.
     """
+    # -----------------------
+    # Media upload dir starts
+    # -----------------------
+    UPLOAD_DIR = Path("images")
+    UPLOAD_DIR.mkdir(parents=True,exist_ok=True)
+    # -----------------------
+    # Media upload dir ends
+    # -----------------------
     try:
         print(f"prompt: {prompt} -- media_image: {media_image}")
         image_path = None
