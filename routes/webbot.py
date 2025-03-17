@@ -1,5 +1,6 @@
 import uuid
 from fastapi import APIRouter,Depends,Form,File,UploadFile,status
+from fastapi.staticfiles import StaticFiles
 from typing import Annotated,Optional
 from sqlalchemy.orm import Session
 from typing import Annotated
@@ -22,12 +23,14 @@ async def get_chat(
     token: Annotated[dict, Depends(get_current_user)],
     db: Session = Depends(get_db)
     ):
+
     """
     Extracting Chats -- v1 (current version)
     This function retrieves chats from the database.
     :param token: User's JWT token.
     :return: Chats.
     """
+    app.mount('/images', StaticFiles(directory="images"), name="images")
     try:
         chats = retrieving_chats(token['user_id'],db=db)
         return {"message": chats, "status": status.HTTP_200_OK}
