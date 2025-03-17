@@ -1,6 +1,5 @@
 import uuid
 from fastapi import APIRouter,Depends,Form,File,UploadFile,status
-from fastapi.staticfiles import StaticFiles
 from typing import Annotated,Optional
 from sqlalchemy.orm import Session
 from typing import Annotated
@@ -30,7 +29,6 @@ async def get_chat(
     :param token: User's JWT token.
     :return: Chats.
     """
-    app.mount('/images', StaticFiles(directory="images"), name="images")
     try:
         chats = retrieving_chats(token['user_id'],db=db)
         return {"message": chats, "status": status.HTTP_200_OK}
