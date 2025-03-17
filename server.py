@@ -21,7 +21,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# app.include_router(auth.app,prefix="/auth")
+app.include_router(auth.app,prefix="/auth")
 # app.include_router(webbot.app,prefix="/webbot/v1")
 
 # from chat_socket.socket_config import socket_app
