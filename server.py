@@ -24,8 +24,8 @@ app.add_middleware(
 app.include_router(auth.app,prefix="/auth")
 # app.include_router(webbot.app,prefix="/webbot/v1")
 
-# from chat_socket.socket_config import socket_app
-# app.mount("/socket.io", socket_app)
+from chat_socket.socket_config import socket_app
+app.mount("/socket.io", socket_app)
 
 # app.mount('/images', StaticFiles(directory="images"), name="images")
 
