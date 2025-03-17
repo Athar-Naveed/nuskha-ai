@@ -1,7 +1,6 @@
 import os
 # from fastapi import HTTPException, status
 from google import genai
-# from google.genai import types
 from pathlib import Path
 
 
