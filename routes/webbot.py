@@ -56,8 +56,8 @@ async def extracting_items(
     # -----------------------
     # Media upload dir starts
     # -----------------------
-    UPLOAD_DIR = Path("images")
-    UPLOAD_DIR.mkdir(parents=True,exist_ok=True)
+    UPLOAD_DIR = Path("/tmp/images")
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     
     # -----------------------
     # Media upload dir ends
