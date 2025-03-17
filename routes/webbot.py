@@ -62,27 +62,27 @@ async def extracting_items(
     """
     try:
         print(f"prompt: {prompt} -- media_image: {media_image}")
-        # image_path = None
+        image_path = None
         # if media_image:
         #     file_ext = media_image.filename.split(".")[1]
         #     image_path = UPLOAD_DIR / f"{uuid.uuid5(uuid.NAMESPACE_DNS, 'python.org')}.{file_ext}"
         #     with open(image_path,"wb") as buffer:
         #         buffer.write(await media_image.read())
         # import pdb; pdb.set_trace()
-    #     if prompt or media_image:
-    #         resp = await medical_grocery_chat(prompt,image_path)
-    #         print(resp)
-    #         chat = {
-    #             "prompt": prompt,
-    #             "media_image": media_image,
-    #             "resp":str(resp),
-    #             # "user_id":token["user_id"]
-    #             }
-    #     # store = storing_chat(chat,db=db)
+        if prompt or media_image:
+            resp = await medical_grocery_chat(prompt,image_path)
+            print(resp)
+            chat = {
+                "prompt": prompt,
+                "media_image": media_image,
+                "resp":str(resp),
+                # "user_id":token["user_id"]
+                }
+        # store = storing_chat(chat,db=db)
             
-    #         return {"message": resp, "status": status.HTTP_200_OK}
-    #     else:
-    #         return {"message": "Prompt and Media image both can't be empty", "status": status.HTTP_400_BAD_REQUEST}
+            return {"message": resp, "status": status.HTTP_200_OK}
+        else:
+            return {"message": "Prompt and Media image both can't be empty", "status": status.HTTP_400_BAD_REQUEST}
     except Exception as e:
         print(f"Error: {e}")
         return {"message": f"Error! {e}", "status": status.HTTP_500_INTERNAL_SERVER_ERROR}
