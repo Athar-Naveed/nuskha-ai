@@ -56,8 +56,9 @@ async def extracting_items(
     # -----------------------
     # Media upload dir starts
     # -----------------------
-    UPLOAD_DIR = Path("images")
-    UPLOAD_DIR.mkdir(parents=True,exist_ok=True)
+    # UPLOAD_DIR = Path("images")
+    # UPLOAD_DIR.mkdir(parents=True,exist_ok=True)
+    # UPLOAD_DIR /
     # -----------------------
     # Media upload dir ends
     # -----------------------
@@ -66,7 +67,7 @@ async def extracting_items(
         image_path = None
         if media_image:
             file_ext = media_image.filename.split(".")[1]
-            image_path = UPLOAD_DIR /f"{uuid.uuid5(uuid.NAMESPACE_DNS, 'python.org')}.{file_ext}"
+            image_path = f"{uuid.uuid5(uuid.NAMESPACE_DNS, 'python.org')}.{file_ext}"
             with open(image_path,"wb") as buffer:
                 buffer.write(await media_image.read())
         # import pdb; pdb.set_trace()
