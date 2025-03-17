@@ -4,7 +4,7 @@ from typing import Annotated,Optional
 from sqlalchemy.orm import Session
 from typing import Annotated
 from fastapi.security import OAuth2PasswordBearer
-# from pathlib import Path
+from pathlib import Path
 from database import get_db
 from auth.utils import decoding_jwt_token 
 from bots.mobile_bot import medical_grocery_chat
@@ -15,8 +15,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 # -----------------------
 # Media upload dir starts
 # -----------------------
-# UPLOAD_DIR = Path("images")
-# UPLOAD_DIR.mkdir(parents=True,exist_ok=True)
+UPLOAD_DIR = Path("images")
+UPLOAD_DIR.mkdir(parents=True,exist_ok=True)
 # -----------------------
 # Media upload dir ends
 # -----------------------
@@ -65,7 +65,7 @@ async def extracting_items(
         image_path = None
         if media_image:
             file_ext = media_image.filename.split(".")[1]
-            image_path = f"images/{uuid.uuid5(uuid.NAMESPACE_DNS, 'python.org')}.{file_ext}"
+            image_path = f"{UPLOAD_DIR}{uuid.uuid5(uuid.NAMESPACE_DNS, 'python.org')}.{file_ext}"
             with open(image_path,"wb") as buffer:
                 buffer.write(await media_image.read())
         # import pdb; pdb.set_trace()
