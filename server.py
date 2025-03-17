@@ -27,7 +27,7 @@ app.include_router(auth.app,prefix="/auth")
 from chat_socket.socket_config import socket_app
 app.mount("/socket.io", socket_app)
 
-# app.mount('/images', StaticFiles(directory="images"), name="images")
+app.mount('/images', StaticFiles(directory="images"), name="images")
 
 @app.get("/")
 async def index():
