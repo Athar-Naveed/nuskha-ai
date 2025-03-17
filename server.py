@@ -1,6 +1,6 @@
 from fastapi import FastAPI,Depends
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
+# from fastapi.staticfiles import StaticFiles
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
 from auth import auth
@@ -27,7 +27,7 @@ app.include_router(webbot.app,prefix="/webbot/v1")
 from chat_socket.socket_config import socket_app
 app.mount("/socket.io", socket_app)
 
-app.mount('/images', StaticFiles(directory="images"), name="images")
+# app.mount('/images', StaticFiles(directory="images"), name="images")
 @app.get("/")
 async def index():
     return {"message": "Welcome to the Nuskha AI!"}
