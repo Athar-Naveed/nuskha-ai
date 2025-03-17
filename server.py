@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import Annotated
 from fastapi.security import OAuth2PasswordRequestForm
 from auth import auth
-# from routes import chatbot,webbot
+from routes import chatbot,webbot
 from database import init_db
 
 
@@ -22,7 +22,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(auth.app,prefix="/auth")
-# app.include_router(webbot.app,prefix="/webbot/v1")
+app.include_router(webbot.app,prefix="/webbot/v1")
 
 from chat_socket.socket_config import socket_app
 app.mount("/socket.io", socket_app)
