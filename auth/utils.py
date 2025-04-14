@@ -1,5 +1,4 @@
 import jwt,os,bcrypt
-from dotenv import load_dotenv
 from fastapi import HTTPException,status
 
 secret_key = os.getenv("SECRET_KEY")

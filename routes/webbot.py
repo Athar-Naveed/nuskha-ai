@@ -31,10 +31,10 @@ async def get_chat(
     """
     try:
         chats = retrieving_chats(token['user_id'],db=db)
-        return {"message": chats, "status": status.HTTP_200_OK}
+        return {"messages": chats, "status": status.HTTP_200_OK}
     except Exception as e:
         print(f"Error: {e}")
-        return {"message": f"Error! {e}", "status": status.HTTP_500_INTERNAL_SERVER_ERROR}
+        return {"messages": f"Error! {e}", "status": status.HTTP_500_INTERNAL_SERVER_ERROR}
 
 @app.post("/extracting_items",tags=["Extracting Items"])
 async def extracting_items(

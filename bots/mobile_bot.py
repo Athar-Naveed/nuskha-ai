@@ -5,7 +5,6 @@ from pathlib import Path
 
 
 client = genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
-# images_url = os.getenv("DEVELOPMENT_URL")
 async def medical_grocery_chat(prompt: str,media_image:str = None):
     try:
         if media_image and prompt == None:

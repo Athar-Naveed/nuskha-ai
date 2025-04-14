@@ -7,7 +7,7 @@ from auth.utils import encoding_jwt_token,decoding_jwt_token,hash_password,verif
 app:APIRouter = APIRouter()
 
 
-@app.post("/login")
+@app.post("/login",tags=["Auth"])
 async def login(
     data:dict,
     db: Session = Depends(get_db),
@@ -28,7 +28,7 @@ async def login(
         
 
 
-@app.post("/register")
+@app.post("/register",tags=["Auth"])
 async def register(
     data:dict,
     db: Session = Depends(get_db),
