@@ -31,7 +31,7 @@ async def medical_grocery_chat(prompt: str,media_image:str = None):
                     model="gemini-2.0-flash",
                     contents=
                     f"""
-                Make decisions based on this: {f.read()}
+                Make decisions based on this (Also remember not to show your internal thoughts to the user): {f.read()}
                 and here is the question:
                 {prompt}"""
                     )
