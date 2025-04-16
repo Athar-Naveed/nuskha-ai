@@ -1,5 +1,5 @@
 import uuid
-from fastapi import APIRouter,Depends,Form,File,UploadFile,status
+from fastapi import APIRouter,Depends,Form,File,UploadFile,status,BackgroundTasks
 from typing import Annotated,Optional
 from sqlalchemy.orm import Session
 from typing import Annotated
@@ -39,6 +39,7 @@ async def get_chat(
 @app.post("/extracting_items",tags=["Extracting Items"])
 async def extracting_items(
     token: Annotated[dict, Depends(get_current_user)],
+    background_tasks:BackgroundTasks,
     prompt: Optional[str] = Form(None),
     media_image: Optional[UploadFile] = File(None),
     db:Session = Depends(get_db)
@@ -63,7 +64,7 @@ async def extracting_items(
     # Media upload dir ends
     # -----------------------
     try:
-        print(f"prompt: {prompt} -- media_image: {media_image}")
+        
         image_path = None
         if media_image:
             file_ext = media_image.filename.split(".")[1]
@@ -73,14 +74,14 @@ async def extracting_items(
         # import pdb; pdb.set_trace()
         if prompt or media_image:
             resp = await medical_grocery_chat(prompt,image_path)
-            print(resp)
+            
             chat = {
                 "prompt": prompt,
-                "media_image": media_image,
+                "media_image": "",
                 "resp":str(resp),
-                # "user_id":token["user_id"]
+                "user_id":token["user_id"]
                 }
-        # store = storing_chat(chat,db=db)
+            background_tasks.add_task(storing_chat,chat,db=db)
             
             return {"message": resp, "status": status.HTTP_200_OK}
         else:
