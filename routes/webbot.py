@@ -74,7 +74,6 @@ async def extracting_items(
         # import pdb; pdb.set_trace()
         if prompt or media_image:
             resp = await medical_grocery_chat(prompt,image_path)
-            
             chat = {
                 "prompt": prompt,
                 "media_image": "",
