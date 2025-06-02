@@ -20,7 +20,7 @@ async def medical_grocery_chat(prompt: str,media_image:str = None):
         if media_image and prompt == None:
             file_ref = client.files.upload(file=media_image)
             response = client.models.generate_content(
-                model="gemini-2.0-flash",
+                model="gemini-2.5-flash-preview-04-17",
                 config={
                     'response_mime_type': 'application/json',
                     "response_schema":list[Medicine]
@@ -36,7 +36,7 @@ async def medical_grocery_chat(prompt: str,media_image:str = None):
             file_ref = client.files.upload(file=media_image)
             
             response = client.models.generate_content(
-                model="gemini-2.0-flash",
+                model="gemini-2.5-flash-preview-04-17",
                 contents=[f"{prompt}. Explain the user about the medical or grocery information provided in the image in the easiest possible manner.",
               file_ref]
             )
@@ -54,5 +54,5 @@ async def medical_grocery_chat(prompt: str,media_image:str = None):
                 )
         return response.text
     except Exception as e:
-        print(f"Error: {e}")
+        
         return {"error": str(e)}  # ✅ Still a generator in case of error
