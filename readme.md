@@ -11,3 +11,34 @@ __Inventory Management for Physical Stores:__ Equipped with an AI vision system 
 __User-Friendly Interface:__ A responsive and intuitive interface ensures ease of use for both store employees and customers,specially __old age__ persons.
 
 Nuskha AI aims to simplify pharmacy and retail operations, leveraging AI to automate manual processes and improve accuracy, efficiency, and customer satisfaction.
+
+
+## API Endpoints
+1. 
+```
+Request Type: GET
+Request Path: /webbot/v1/get_chat
+Request Params: None
+Authentication: Yes (Auth Token)
+Return Type: Array<JSON>
+Return Params:
+- prompt: user_input
+- media_image: user_image
+- bot_response: AI response
+```
+2. 
+```
+Request Type: POST
+Request Path: /webbot/v1/extracting_items
+Request Params: 
+- prompt: user_input
+- media_image (Optional): user_image
+- bot_response: AI response
+
+Authentication: Yes (Auth Token)
+Return Type: Array<JSON>
+Return Params:
+- prompt: user_input
+- media_image: user_image
+- bot_response: AI response
+```
