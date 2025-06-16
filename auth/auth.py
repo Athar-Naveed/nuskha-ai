@@ -22,7 +22,7 @@ async def login(
             return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail={"message":"Invalid Password!","status":status.HTTP_401_UNAUTHORIZED})
         
         token = encoding_jwt_token({"user_id":user.user_id,"user_email":user.user_email,"user_name":f"{user.first_name} {user.last_name}"})
-        return {"message":"User Logged In Successfully!","auth_token":token,"status":status.HTTP_202_ACCEPTED}
+        return {"message":"User Logged In Successfully!","auth_token":token,"status":status.HTTP_200_OK}
     except Exception as e:
         return HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail={"message":"Please try again later!"}) 
         
