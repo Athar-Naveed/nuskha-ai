@@ -1,15 +1,16 @@
-import datetime
+
 from fastapi import APIRouter,HTTPException,Depends,status
 from sqlalchemy.orm import Session
 from models.auth_model import Users
 from database import get_db
 from auth.utils import encoding_jwt_token,decoding_jwt_token,hash_password,verifying_password
+from type.auth_type import *
 app:APIRouter = APIRouter()
 
 
-@app.post("/login",tags=["Auth"])
+@app.post("/login",tags=["Auth"],response_model=LoginResponseType)
 async def login(
-    data:dict,
+    data:LoginType,
     db: Session = Depends(get_db),
 ):
     try:
@@ -28,9 +29,9 @@ async def login(
         
 
 
-@app.post("/register",tags=["Auth"])
+@app.post("/register",tags=["Auth"],response_model=RegisterResponseType)
 async def register(
-    data:dict,
+    data:RegisterType,
     db: Session = Depends(get_db),
 ):
     try:
