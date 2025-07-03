@@ -82,10 +82,10 @@ async def extracting_items(
                 }
             background_tasks.add_task(storing_chat,chat,db=db)
             
-            return {"message": resp, "status": status.HTTP_200_OK}
+            return {"bot_response": resp, "status_code": status.HTTP_200_OK}
         else:
-            return {"message": "Prompt and Media image both can't be empty", "status": status.HTTP_400_BAD_REQUEST}
+            return {"bot_response": "Prompt and Media image both can't be empty", "status_code": status.HTTP_400_BAD_REQUEST}
     except Exception as e:
         print(f"Error: {e}")
-        return {"message": f"Error! {e}", "status": status.HTTP_500_INTERNAL_SERVER_ERROR}
+        return {"bot_response": f"Error! {e}", "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR}
 
