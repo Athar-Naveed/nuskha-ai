@@ -1,5 +1,5 @@
 import uuid
-from fastapi import APIRouter,Depends,Form,File,UploadFile,status,BackgroundTasks
+from fastapi import APIRouter,Depends,Form,File, HTTPException,UploadFile,status,BackgroundTasks
 from typing import Annotated,Optional
 from sqlalchemy.orm import Session
 from typing import Annotated
@@ -16,6 +16,15 @@ app:APIRouter = APIRouter()
 async def get_current_user(token:Annotated[dict, Depends(oauth2_scheme)]):
     decoded_data = decoding_jwt_token(token)
     return decoded_data
+
+
+
+@app.get("/get_current_user",tags=["User Information"])
+async def get_user_info(token:Annotated[dict,Depends(get_current_user)]):
+    try:
+        return {"user_info":token,"status":status.HTTP_200_OK}
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,detail="Error! An unexpected error occured")
 
 @app.get("/get_chat",tags=["Get Chats"])
 async def get_chat(
@@ -64,7 +73,7 @@ async def extracting_items(
     # Media upload dir ends
     # -----------------------
     try:
-        
+        print("prompt:",prompt)
         image_path = None
         if media_image:
             file_ext = media_image.filename.split(".")[1]

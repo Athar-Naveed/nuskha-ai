@@ -1,58 +1,84 @@
-import json
 import os
-# from fastapi import HTTPException, status
-from google import genai
 from pathlib import Path
 from pydantic import BaseModel
+from google import genai
+from google.genai import types
 
 class Medicine(BaseModel):
-    name:str
-    quantity:str
-    power:str
+    name: str
+    quantity: str
+    power: str
+
 client = genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
-f = open(Path("prompts/general.txt"),"r")
-f1 = open(Path("prompts/json_prompt.txt"),"r")
-system_prompt = f.read()
-json_conversion_prompt = f1.read()
 
-async def medical_grocery_chat(prompt: str,media_image:str = None):
+# Load prompt templates
+system_prompt = Path("prompts/general.txt").read_text()
+json_conversion_prompt = Path("prompts/json_prompt.txt").read_text()
+
+# Utility to estimate token count
+def estimate_tokens(text: str) -> int:
+    # Rough estimation: 1 token ≈ 4 characters (English)
+    return len(text) // 4
+
+async def medical_grocery_chat(prompt: str, media_image: str = None):
     try:
-        if media_image and prompt == None:
+        file_ref = None
+        if media_image:
             file_ref = client.files.upload(file=media_image)
-            response = client.models.generate_content(
-                model="gemini-2.5-flash-preview-04-17",
-                config={
-                    'response_mime_type': 'application/json',
-                    "response_schema":list[Medicine]
-                },
-                contents=[json_conversion_prompt,
-              file_ref]
-            )
-            
-            cleaned_dict_list = [med.model_dump() for med in response.parsed]
 
-            return cleaned_dict_list
-        elif prompt and media_image:
-            file_ref = client.files.upload(file=media_image)
-            
+        # 🧠 Case 1: Image Only → JSON response
+        if media_image and not prompt:
             response = client.models.generate_content(
-                model="gemini-2.5-flash-preview-04-17",
-                contents=[f"{prompt}. Explain the user about the medical or grocery information provided in the image in the easiest possible manner.",
-              file_ref]
+                model="models/gemini-2.0-flash-001",
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                    response_schema=list[Medicine]
+                ),
+                contents=[json_conversion_prompt, file_ref]
+            )
+            cleaned_dict_list = [med.model_dump() for med in response.parsed]
+            return cleaned_dict_list
+
+        # 🧠 Case 2: Prompt + Image → Use cache if content is big enough
+        elif prompt and media_image:
+            estimated_token_count = estimate_tokens(prompt + json_conversion_prompt)
+            use_cache = estimated_token_count >= 4096
+
+            if use_cache:
+                cache = client.caches.create(
+                    model="models/gemini-2.0-flash-001",
+                    config=types.CreateCachedContentConfig(
+                        display_name='medical_grocery_cache',
+                        system_instruction="You're an expert in analyzing prescription images and answering user queries in simple language.",
+                        contents=[file_ref],
+                        ttl="4096s"
+                    )
+                )
+                config = types.GenerateContentConfig(cached_content=cache.name)
+            else:
+                config = None  # No cache config
+
+            response = client.models.generate_content(
+                model="models/gemini-2.0-flash-001",
+                config=config,
+                contents=[
+                    f"{prompt}. Explain the user about the medical or grocery information provided in the image in the easiest possible manner.",
+                    file_ref
+                ]
             )
             return response.text
-            
+
+        # 🧠 Case 3: Prompt Only
         else:
-            
             response = client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=
-                f"""
-            Make decisions based on this (Also remember not to show your internal thoughts to the user): {system_prompt}
-            and here is the question:
-            {prompt}"""
-                )
-        return response.text
+                model="models/gemini-2.0-flash-001",
+                contents=f"""
+                    Make decisions based on this (do not reveal your internal thoughts): {system_prompt}
+                    and here is the question:
+                    {prompt}
+                """
+            )
+            return response.text
+
     except Exception as e:
-        
-        return {"error": str(e)}  # ✅ Still a generator in case of error
+        return {"error": str(e)}

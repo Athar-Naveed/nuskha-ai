@@ -13,13 +13,25 @@ def encoding_jwt_token(user_details):
     
 
 
-def decoding_jwt_token(token):
+def decoding_jwt_token(token: str):
     try:
         decoded_jwt = jwt.decode(token, secret_key, algorithms=["HS256"])
         return decoded_jwt
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"message": "Token has expired", "status": 401}
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={"message": "Invalid token", "status": 401}
+        )
     except Exception as e:
-        print(f"Error: {e}")
-        return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail={"message":e,"status":status.HTTP_400_BAD_REQUEST})
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={"message": f"Error decoding token: {str(e)}", "status": 400}
+        )
     
 
 def hash_password(user_password):

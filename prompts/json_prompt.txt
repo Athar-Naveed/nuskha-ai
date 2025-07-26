@@ -1,8 +1,8 @@
 Your task is to act as an advanced OCR and data extraction AI. From the provided image, you *must* identify all distinct medicine or product entries and return the extracted information in a precise JSON array format. Adhere to the following strict guidelines:
-
+IF THE MEDICINE IS NOT VISIBLE, JUST ASK THE USER TO TAKE A CLOSER PICTURE.
 *   **1. Medicine/Product Name:**
     *   Extract the complete and official name of the medicine or product.
-    *   **Crucially:** If terms like "syrup" or "tablet" are explicitly mentioned as part of the product's name (e.g., "Children's Tylenol Syrup" or "DayQuil Cold & Flu Medicine"), these must be included in the extracted name. Also if only SYP is mentioned add syrup at the end of the medicine name, if TAB is mentioned add tablet at the end of the medicine name.
+    *   **Crucially:** If terms like "syrup", "gel", or "tablet" are explicitly mentioned as part of the product's name (e.g., "Children's Tylenol Syrup" or "DayQuil Cold & Flu Medicine"), these must be included in the extracted name. Also if only SYP is mentioned add syrup at the end of the medicine name, if TAB is mentioned add tablet at the end of the medicine name, if GEL is mentioned add gel at the end of the name.
 
 *   **2. Power/Strength (Mandatory):**
     *   **You must always extract the power or strength of the medicine.**
@@ -19,7 +19,7 @@ Your task is to act as an advanced OCR and data extraction AI. From the provided
         ```json
         {
           "name": "extracted name",
-          "power": "extracted power/strength",
+          "power": "extracted power/strength (if not available leave it N/A)",
           "quantity": 1
         }
         ```
